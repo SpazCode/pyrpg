@@ -29,7 +29,7 @@ class Main(Scene):
         1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,1
         1,0,1,1,1,1,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1,1,1,0,1,0,1
         1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1
-        1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1
+        1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,0,1,0,1
         1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0,0,0,1
         1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,0,1
         1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1
@@ -98,7 +98,6 @@ class Explorer(Rectangle):
         self.pos += Vector2D(self.x_velocity, self.y_velocity)
         self.hitbox.pos = self.pos
         self.hitbox.update()
-        indexes = self.hitbox.is_colliding_all(self.terrian)
         directions = {
             "LEFT": not self.direction[0] and not self.direction[1] and not self.direction[2] and self.direction[3],
             "UP": self.direction[0] and not self.direction[1] and not self.direction[2] and not self.direction[3],
@@ -110,44 +109,45 @@ class Explorer(Rectangle):
             "DOWN_RIGHT": not self.direction[0] and self.direction[1] and self.direction[2] and not self.direction[3],
         }
 
+        indexes = self.hitbox.is_colliding_all(self.terrian)
         for ind in indexes:
             t = self.terrian[ind]
-            if self.pos.x < t.x + t.w and directions["LEFT"]:
-                self.pos = Vector2D(t.x + t.w, self.pos.y)
-            elif self.pos.x + self.scale.x > t.x and directions["RIGHT"]:
-                self.pos = Vector2D(t.x - self.scale.x, self.pos.y)
-            elif self.pos.y < t.y + t.h and directions["DOWN"]:
-                self.pos = Vector2D(self.pos.x, t.y - self.scale.y)
-            elif self.pos.y + self.scale.y > t.y and directions["UP"]:
-                self.pos = Vector2D(self.pos.x, t.y + t.h)
+            if self.pos.x < t.pos.x + t.scale.x and directions["LEFT"]:
+                self.pos = Vector2D(t.pos.x + t.scale.x, self.pos.y)
+            elif self.pos.x + self.scale.x > t.pos.x and directions["RIGHT"]:
+                self.pos = Vector2D(t.pos.x - self.scale.x, self.pos.y)
+            elif self.pos.y < t.pos.y + t.scale.y and directions["DOWN"]:
+                self.pos = Vector2D(self.pos.x, t.pos.y - self.scale.y)
+            elif self.pos.y + self.scale.y > t.pos.y and directions["UP"]:
+                self.pos = Vector2D(self.pos.x, t.pos.y + t.scale.y)
             elif directions["UP_LEFT"]:
-                if abs(self.pos.x - (t.x + t.w)) > abs(self.pos.y - (t.y + t.h)):
-                    self.pos = Vector2D(self.pos.x, t.y + t.h)
-                elif abs(self.pos.x - (t.x + t.w)) < abs(self.pos.y - (t.y + t.h)):
-                    self.pos = Vector2D(t.x + t.w, self.pos.y)
+                if abs(self.pos.x - (t.pos.x + t.scale.x)) > abs(self.pos.y - (t.pos.y + t.scale.y)):
+                    self.pos = Vector2D(self.pos.x, t.pos.y + t.scale.y)
+                elif abs(self.pos.x - (t.pos.x + t.scale.x)) < abs(self.pos.y - (t.pos.y + t.scale.y)):
+                    self.pos = Vector2D(t.pos.x + t.scale.x, self.pos.y)
                 else:
-                    self.pos = Vector2D(t.x + t.w, t.y + t.h)
+                    self.pos = Vector2D(t.pos.x + t.scale.x, t.pos.y + t.scale.y)
             elif directions["UP_RIGHT"]:
-                if abs((self.pos.x + self.scale.x) - t.x) > abs(self.pos.y - (t.y + t.h)):
-                    self.pos = Vector2D(self.pos.x, t.y + t.h)
-                elif abs((self.pos.x + self.scale.x) - t.x) < abs(self.pos.y - (t.y + t.h)):
-                    self.pos = Vector2D(t.x - self.scale.x, self.pos.y)
+                if abs((self.pos.x + self.scale.x) - t.pos.x) > abs(self.pos.y - (t.pos.y + t.scale.y)):
+                    self.pos = Vector2D(self.pos.x, t.pos.y + t.scale.y)
+                elif abs((self.pos.x + self.scale.x) - t.pos.x) < abs(self.pos.y - (t.pos.y + t.scale.y)):
+                    self.pos = Vector2D(t.pos.x - self.scale.x, self.pos.y)
                 else:
-                    self.pos = Vector2D(t.x - self.scale.x, t.y + t.h)
+                    self.pos = Vector2D(t.pos.x - self.scale.x, t.pos.y + t.scale.y)
             elif directions["DOWN_LEFT"]:
-                if abs(self.pos.x - (t.x + t.w)) > abs((self.pos.y + self.scale.y) - t.y):
-                    self.pos = Vector2D(self.pos.x, t.y - self.scale.y)
-                elif abs(self.pos.x - (t.x + t.w)) < abs((self.pos.y + self.scale.y) - t.y):
-                    self.pos = Vector2D(t.x + t.w, self.pos.y)
+                if abs(self.pos.x - (t.pos.x + t.scale.x)) > abs((self.pos.y + self.scale.y) - t.pos.y):
+                    self.pos = Vector2D(self.pos.x, t.pos.y - self.scale.y)
+                elif abs(self.pos.x - (t.pos.x + t.scale.x)) < abs((self.pos.y + self.scale.y) - t.pos.y):
+                    self.pos = Vector2D(t.pos.x + t.scale.x, self.pos.y)
                 else:
-                    self.pos = Vector2D(t.x + t.w, t.y - self.scale.y)
+                    self.pos = Vector2D(t.pos.x + t.scale.x, t.pos.y - self.scale.y)
             elif directions["DOWN_RIGHT"]:
-                if abs((self.pos.x + self.scale.x) - t.x) > abs((self.pos.y + self.scale.y) - t.y):
-                    self.pos = Vector2D(self.pos.x, t.y - self.scale.y)
-                elif abs((self.pos.x + self.scale.x) - t.x) < abs((self.pos.y + self.scale.y) - t.y):
-                    self.pos = Vector2D(t.x - self.scale.x, self.pos.y)
+                if abs((self.pos.x + self.scale.x) - t.pos.x) > abs((self.pos.y + self.scale.y) - t.pos.y):
+                    self.pos = Vector2D(self.pos.x, t.pos.y - self.scale.y)
+                elif abs((self.pos.x + self.scale.x) - t.pos.x) < abs((self.pos.y + self.scale.y) - t.pos.y):
+                    self.pos = Vector2D(t.pos.x - self.scale.x, self.pos.y)
                 else:
-                    self.pos = Vector2D(t.x - self.scale.x, t.y - self.scale.y)
+                    self.pos = Vector2D(t.pos.x - self.scale.x, t.pos.y - self.scale.y)
         self.x_velocity = 0
         self.y_velocity = 0
         self.direction = [False, False, False, False]
@@ -202,9 +202,8 @@ class Maze(object):
             y_offset += 1
 
     def get_terrain(self):
-        return [o.hitbox.rect for o in self.objects]
+        return [o.hitbox for o in self.objects]
 
     class Wall(Rectangle):
         def __init__(self, pos: Vector2D = (0, 0), scale: Vector2D = (0, 0), colour: Colour = Colour(0, 0, 0)):
             super().__init__(pos, scale, colour)
-            self.hitbox.visible = True

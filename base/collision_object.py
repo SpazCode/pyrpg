@@ -29,7 +29,9 @@ class CollisionObject(object):
         return self.rect.colliderect(other.rect)
 
     def is_colliding_any(self, others: list):
+        others = [o.rect for o in others]
         return self.rect.collidelist(others)
 
     def is_colliding_all(self, others: list):
+        others = [o.rect for o in others]
         return self.rect.collidelistall(others)
