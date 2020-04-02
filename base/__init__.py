@@ -9,10 +9,16 @@ class Vector2D(NamedTuple):
     y: int
 
     def __add__(self, other):
+        if not isinstance(other, Vector2D):
+            raise TypeError()
         return Vector2D(self.x + other.x, self.y + other.y)
 
     def __sub__(self, other):
+        if not isinstance(other, Vector2D):
+            raise TypeError()
         return Vector2D(self.x - other.x, self.y - other.y)
 
     def __mul__(self, other):
+        if not isinstance(other, Vector2D):
+            raise TypeError()
         return Vector2D(self.x * other.x, self.y * other.y)

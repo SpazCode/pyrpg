@@ -1,3 +1,5 @@
+from observable import Observable
+
 from base.game_object import GameObject
 
 
@@ -11,6 +13,7 @@ class Scene(object):
         # The screen object that the Scene should draw to.
         self.screen = None
         self.objects = {}
+        self.event_handler = None
 
     # Update the game logic of all objects in the scene the draw them.
     def update(self):
@@ -28,8 +31,8 @@ class Scene(object):
 
     # Draw in order the objects in the scene.
     def draw(self):
-        ordered_obj = self.objects.values()
-        sorted(ordered_obj, key=lambda o: o.level)
+        ordered_obj = list(self.objects.values())
+        ordered_obj.sort(key=lambda o: o.level)
         for obj in ordered_obj:
             obj.instance.draw(self.screen)
 
@@ -41,6 +44,12 @@ class Scene(object):
 
     def remove_object(self, name: str):
         self.objects.pop(name)
+
+    def set_event_handler(self, event_handler: Observable):
+        self.event_handler = event_handler
+        for obj in self.objects.values():
+            obj.instance.set_event_handler(self.event_handler)
+            obj.instance.update_events()
 
     class SceneObject(object):
         """
