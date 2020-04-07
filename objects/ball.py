@@ -13,7 +13,6 @@ class Ball(GameObject):
         self.colour = colour
         self.hitbox = CollisionObject(pos=pos, scale=Vector2D(x=int(radius * 2 * 0.9), y=int(radius * 2 * 0.9)),
                                       center=Vector2D(-int(radius * 0.9), -int(radius * 0.9)))
-        self.hitbox.visible = True
 
     def update(self):
         self.hitbox.pos = self.pos

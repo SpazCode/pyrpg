@@ -68,6 +68,7 @@ class Game(object):
         if scene_id not in self.scenes.keys():
             raise SceneIdNotFoundException()
         self.current_scene = scene_id
+        self.scenes[self.current_scene].update_events()
 
     def add_scene(self, scene_id: str, scene: Scene):
         if scene_id in self.scenes.keys():
